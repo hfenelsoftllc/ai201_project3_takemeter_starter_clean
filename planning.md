@@ -1,0 +1,1 @@
+nba revolves around three distinct post types—analysis, hot takes, and reactions—each with its own norms and expectations. Analysis is evidence‑driven, hot takes lead with bold arguments, and reactions capture immediate emotion from just‑happened moments. Mixing them breaks the subreddit’s social contract, leading readers to respond in the wrong mode.
