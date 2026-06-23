@@ -131,3 +131,30 @@ For the classifier to be genuinely valuable — not just technically functional 
 ### What failure looks like
 
 A classifier that conflates analysis and hot_take at high rates — confusion matrix showing more than 20% of one class predicted as the other — is not deployable regardless of overall accuracy, because that is precisely the distinction the tool exists to make. High accuracy achieved by collapsing two classes is the specific failure mode to guard against in this task.
+
+---
+
+## 7. Post-Execution Retrospective
+
+*This section was added after project completion to document what actually happened versus what was planned.*
+
+### What went according to plan
+
+The label taxonomy held up well throughout the annotation process. The three-class structure was the right design choice — the decision rules in Section 3 were consulted frequently and resolved most borderline cases without reopening the core definitions. The hardest boundary (analysis vs. hot_take) was correctly predicted as the primary failure mode, and the final confusion matrix confirmed this exactly: all errors involve posts incorrectly predicted as analysis.
+
+The evaluation metrics chosen in Section 5 proved to be the right ones. Reporting macro F1 rather than accuracy was essential — the fine-tuned model achieves better macro F1 (0.91) than the baseline while losing on raw accuracy (90.62% vs. 96.55%), a result that can only be understood by examining per-class metrics and not just overall accuracy.
+
+### What diverged from plan
+
+**LLM pre-labeling correction rate:** The plan anticipated that LLM pre-labeling would reduce annotation time with only moderate corrections needed. The actual correction rate was approximately 40% — higher than expected. The LLM made the same analysis/hot_take boundary error as the fine-tuned model: it weighted evidence-like language as a signal for analysis without adequately weighting the argumentative framing. This is a useful signal that the boundary is genuinely hard and not just an artifact of a small training set.
+
+**Dataset collection balance:** Initial collection skewed toward reaction posts because game threads are the most readily accessible source. Reaching 70 examples per class for analysis required a dedicated second collection session focused on Film Room threads and film breakdown posts. The plan's contingency protocol (Section 4) handled this correctly, but the need for a second session was not anticipated.
+
+**Baseline performance:** The zero-shot LLM baseline outperformed the fine-tuned model on raw accuracy by 5.93 percentage points. This was not an anticipated outcome — the expectation was that fine-tuning on domain-specific data would match or exceed a general-purpose zero-shot model. The result means the fine-tuning investment was not cost-effective at this dataset size for raw accuracy, though the macro F1 success criterion was still met.
+
+### What I would change if starting over
+
+1. Collect 150 examples per class instead of 70, with deliberate oversampling of analysis/hot_take boundary cases — these are the examples the model needs most and has the fewest of.
+2. Run the LLM pre-labeling pass first, then use its errors as a guide for targeted collection — the LLM's errors cluster on the same boundary as the human labeling difficulty, making them a useful signal for where more data is needed.
+3. Add a held-out boundary-case evaluation set: 20–30 posts selected specifically because they are hard to classify. This would give a more diagnostic view of model performance on the cases that matter most.
+4. Document the annotation process as a log during collection rather than reconstructing it afterward — this would make the AI usage section more precise.
